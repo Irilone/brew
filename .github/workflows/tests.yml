@@ -455,6 +455,9 @@ jobs:
           brew services info --json memcached postgresql@15
           brew services cleanup
           brew bundle cleanup --force
+        env:
+          HOMEBREW_DEBUG: 1
+          HOMEBREW_VERBOSE: 1
 
   analytics:
     name: ${{ matrix.name }}
