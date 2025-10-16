@@ -355,7 +355,17 @@ class FormulaInstaller
       # we resolve dependencies according to the bottle's built OS, not the current OS.
       bottle_os_version = bottle_tab_attrs.dig("built_on", "os_version")
       current_os_version = OS_VERSION
-      @bottle_built_os_version = bottle_os_version if bottle_os_version != current_os_version
+
+      # Only use bottle OS version if:
+      # 1. It's different from the current OS version
+      # 2. It's a macOS version (starts with "macOS ")
+      # 3. We're running on macOS (not an :all bottle being installed on Linux)
+      if bottle_os_version != current_os_version &&
+         bottle_os_version.to_s.start_with?("macOS ") &&
+         OS.mac?
+        # Strip "macOS " prefix to get just the version number
+        @bottle_built_os_version = bottle_os_version.delete_prefix("macOS ")
+      end
     rescue Resource::BottleManifest::Error
       # If we can't get the bottle manifest, assume a full dependencies install.
     end
